@@ -1,7 +1,8 @@
+import os
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 
-TOKEN = '8084707418:AAG4qZ8GizdIU6gniIp00Hdutfw0Klab1-w'  # <-- вставь сюда свой токен
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 FAQ = {
     "время работы": "Мы открыты каждый день с 9:00 до 20:00.",
