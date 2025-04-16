@@ -1,13 +1,15 @@
 import os
+import openai
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 FAQ = {
-    "время работы": "Мы открыты каждый день с 9:00 до 20:00.",
-    "доставка": "Доставка по Денверу — $5. Бесплатно при заказе от $50.",
-    "адрес": "Наш магазин находится в центре Денвера: 123 Flower St."
+    "время работы": "Мы открыты каждый день с 10:00 до 18:00.",
+    "доставка": "Доставка по Денверу — $25. Бесплатно при заказе от $50.",
+    "адрес": "Наш магазин находится в центре Денвера: 1655 Larimer st."
 }
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -27,7 +29,13 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text(FAQ[key])
             return
 
-    await update.message.reply_text("Спасибо! Мы приняли ваш заказ 💐\nСкоро свяжемся с вами для уточнения.")
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": text}]
+    )
+
+    reply = response.choices[0].message.content
+    await update.message.reply_text(reply)
 
 app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(CommandHandler("start", start))
