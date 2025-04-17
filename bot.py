@@ -1,10 +1,12 @@
 import os
+import asyncio
 from openai import OpenAI 
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+RENDER_URL = os.getenv("RENDER_EXTERNAL_URL")
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
@@ -43,5 +45,12 @@ app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-print("Бот запущен...")
-app.run_polling()
+async def main():
+    await app.initialize()
+    await app.start()
+    await app.bot.set_webhook(f"{RENDER_URL}/")
+    print("Бот запущен через Webhook...")
+    await asyncio.Event().wait()
+
+if __name__ == '__main__':
+    asyncio.run(main())
