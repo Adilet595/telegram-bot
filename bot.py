@@ -6,7 +6,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, Con
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-RENDER_URL = os.getenv("RENDER_EXTERNAL_URL")
+RENDER_URL = "https://telegram-bot.onrender.com"
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
@@ -48,7 +48,7 @@ app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 async def main():
     await app.initialize()
     await app.start()
-    await app.bot.set_webhook(f"{RENDER_URL}/")
+    await app.bot.set_webhook(url=f"{RENDER_URL}/")
     print("Бот запущен через Webhook...")
     await asyncio.Event().wait()
 
